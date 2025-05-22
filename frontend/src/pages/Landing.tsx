@@ -12,7 +12,7 @@ const Landing = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        Welcome to SVS Textiles
+        Welcome to VSS Textiles
       </motion.h1>
       <motion.p
         className="text-lg text-gray-300 mb-8 text-center max-w-xl"

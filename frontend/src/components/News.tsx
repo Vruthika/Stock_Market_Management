@@ -60,7 +60,7 @@ const NewsResearchPage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Stock News</h1>
+      <h1 className="text-3xl font-bold text-center text-white mb-6">Stock News</h1>
 
       {/* Search Bar */}
       <div className="flex items-center justify-center mb-4">
@@ -80,7 +80,7 @@ const NewsResearchPage = () => {
       </div>
 
       {/* Tabs for different categories */}
-      <div className="flex justify-center space-x-4 mb-6">
+      <div className="flex justify-center space-x-4  mb-6">
         <button
           className={`p-2 ${
             activeTab === "stock-news" ? "bg-blue-600 text-white" : "bg-gray-200"

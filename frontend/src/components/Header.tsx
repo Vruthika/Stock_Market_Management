@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Bell, User, LineChart } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -8,6 +8,7 @@ const Header: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation(); // <-- Get current route
 
   useEffect(() => {
     // Simulate loading delay
@@ -45,7 +46,7 @@ const Header: React.FC = () => {
           {/* Logo */}
           <div className="flex items-center space-x-2 px-4 py-3">
             <LineChart className="h-8 w-8 text-indigo-500" />
-            <div className="text-white text-xl font-bold">SVS Textiles</div>
+            <div className="text-white text-xl font-bold">VSS Textiles</div>
           </div>
 
           {/* Right-side Actions */}
@@ -77,7 +78,7 @@ const Header: React.FC = () => {
             {/* Sign In / Sign Out Button */}
             {isLoading ? (
               <div className="w-20 h-10 bg-gray-700 animate-pulse rounded-md"></div>
-            ) : isAuthenticated ? (
+            ) : isAuthenticated && location.pathname !== '/' ? (
               <button
                 className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
                 onClick={handleSignOut}

@@ -5,106 +5,119 @@ const http = require("http");
 const { Server } = require("socket.io");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const app = express();
-const port = 5000;
-
-// Import Google Generative AI SDK
+const dotenv = require("dotenv");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// Initialize Gemini AI
-// const genAI = new GoogleGenerativeAI("AIzaSyCLGe_eCqmehLVBjPusXtTxtJXCqOJX2xI");
-const genAI = new GoogleGenerativeAI("AIzaSyBazYvOQVz-GbRkAfIN1AWwP1q3UwAr7tE");
+dotenv.config(); // Load .env variables
+
+const app = express();
+const port = process.env.PORT || 5000;
+
+// HTTP & Socket.IO server
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: { origin: "*", credentials: true },
+  cors: {
+    origin: "*", // Set this properly in production
+    credentials: true,
+  },
 });
 
 // Attach io to app
 app.set("io", io);
 
-app.use((req, res, next) => {
-    req.io = io; // Attach Socket.io to `req`
-    next();
-  });
-  
-// Connect to MongoDB
-mongoose.connect(dbConfig.url, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log("✅ Successfully connected to the database"))
-    .catch((err) => {
-        console.error("❌ Could not connect to the database. Exiting now...", err);
-        process.exit(1);
-    });
-
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-io.on("connection", (socket) => {
-    console.log("A user connected:", socket.id);
-  
-    socket.on("joinRoom", (chatRoomId) => {
-      socket.join(chatRoomId);
-      console.log(`User joined chatRoomId: ${chatRoomId}`);
-    });
-  
-    socket.on("disconnect", () => {
-      console.log("User disconnected");
-    });
+
+// MongoDB Connection
+mongoose
+  .connect(dbConfig.url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => {
+    console.error("❌ MongoDB connection failed:", err);
+    process.exit(1);
   });
-// Import Routes
-const users = require("./routes/user.js");
-const products = require("./routes/products.js");
-const livechat = require("./routes/livechat.js");
-const stockRoutes = require("./routes/stocks.data.js");
-const news = require("./routes/news.js");
-const courseRoutes = require("./routes/courses.js");
-app.use("/auth", users);
-app.use("/products", products);
-app.use("/livechat", livechat);
-app.use("/stocks", stockRoutes);
-app.use("/news", news);
-app.use("/courses", courseRoutes);
 
+// Routes
+app.use("/auth", require("./routes/user.js"));
+app.use("/products", require("./routes/products.js"));
+app.use("/livechat", require("./routes/livechat.js"));
+app.use("/stocks", require("./routes/stocks.data.js"));
+app.use("/news", require("./routes/news.js"));
+app.use("/courses", require("./routes/courses.js"));
 
+// Initialize Gemini AI
+const genAI = new GoogleGenerativeAI(
+  process.env.GEMINI_API_KEY || "your_api_key"
+);
 
-// Start Server
-server.listen(port, () => {
-    console.log(`🚀 Server is running on port ${port}`);
+// In-memory store for user-specific chat histories (use DB for production)
+const userChats = {};
+
+// Socket.IO: Real-time private chat
+io.on("connection", (socket) => {
+  console.log("🟢 User connected:", socket.id);
+
+  socket.on("joinRoom", (userId) => {
+    socket.join(userId);
+    console.log(`👤 User ${userId} joined private room: ${socket.id}`);
+  });
+
+  socket.on("sendMessage", (userId, message) => {
+    socket.to(userId).emit("receiveMessage", message);
+    console.log(`📩 Message sent to ${userId}: ${message}`);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("🔴 User disconnected:", socket.id);
+  });
 });
 
-
-
-// ✅ Define the /gemini route
+// Gemini AI Endpoint
 app.post("/gemini", async (req, res) => {
-    try {
-        const { history = [], message } = req.body;
+  try {
+    const { userId, message } = req.body;
 
-        if (!message || typeof message !== "string") {
-            return res.status(400).json({ error: "Message is required and must be a string" });
-        }
-
-        // Ensure history is formatted correctly
-        const formattedHistory = history.map(entry => ({
-            role: entry.role,  // "user" or "model"
-            parts: [{ text: entry.parts.replace("**You:** ", "").replace("**Bot:** ", "") }]  
-        }));
-
-        // Initialize Gemini AI model
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const chat = model.startChat({ history: formattedHistory });
-
-        // Ensure message is sent in the correct format (send string, not object)
-        console.log("Sending request:", message);
-
-        const result = await chat.sendMessage(message);  // ✅ Send as a string
-
-        // Extract and send back response
-        const response = result.response;
-        const text = response.text();
-
-        res.json({ reply: text });
-    } catch (error) {
-        console.error("Error in /gemini:", error);
-        res.status(500).json({ error: "Internal server error" });
+    if (!userId || !message || typeof message !== "string") {
+      return res.status(400).json({ error: "UserId and message are required" });
     }
+
+    // Initialize user history if not existing
+    if (!userChats[userId]) userChats[userId] = [];
+
+    const history = userChats[userId];
+
+    const formattedHistory = history.map((entry) => ({
+      role: entry.role,
+      parts: [
+        { text: entry.parts.replace("**You:** ", "").replace("**Bot:** ", "") },
+      ],
+    }));
+
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const chat = model.startChat({ history: formattedHistory });
+
+    console.log(`🤖 [${userId}] Input to Gemini: ${message}`);
+    const result = await chat.sendMessage(message);
+    const response = result.response;
+    const reply = response.text();
+
+    // Save interaction in memory
+    userChats[userId].push({ role: "user", parts: message });
+    userChats[userId].push({ role: "model", parts: reply });
+
+    res.json({ reply });
+  } catch (error) {
+    console.error("❌ Gemini AI Error:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Start server
+server.listen(port, () => {
+  console.log(`🚀 Server is running at http://localhost:${port}`);
 });

@@ -31,22 +31,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const menuItems = [
-    { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/learning', label: 'Learning Center', icon: GraduationCap },
-    { path: '/trading', label: 'Trading', icon: LineChart },
-    { path: '/portfolio', label: 'Portfolio', icon: Wallet },
-    { path: '/social', label: 'Social Trading', icon: Users },
-    { path: '/chat', label: 'Live Chat', icon: MessageSquare },
-    { path: '/market-analysis', label: 'Market Analysis', icon: BarChart },
-    { path: '/news', label: 'News & Research', icon: Newspaper },
-    { path: '/orders', label: 'Orders', icon: ClipboardList },
-    { path: '/watchlist', label: 'Watchlist', icon: Star },
-    { path: '/notifications', label: 'Notifications', icon: Bell },
-    { path: '/profile', label: 'Profile', icon: UserCircle },
-    { path: '/settings', label: 'Settings', icon: Settings },
-    { path: '/logout', label: 'LogOut', icon: LogOut },
-    
+    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard,exact:true },
+    { path: '/dashboard/learning', label: 'Learning Center', icon: GraduationCap },
+    { path: '/dashboard/trading', label: 'Trading', icon: LineChart },
+    { path: '/dashboard/portfolio', label: 'Portfolio', icon: Wallet },
+    { path: '/dashboard/social', label: 'Social Trading', icon: Users },
+    { path: '/dashboard/chat', label: 'Live Chat', icon: MessageSquare },
+    { path: '/dashboard/market-analysis', label: 'Market Analysis', icon: BarChart },
+    { path: '/dashboard/news', label: 'News & Research', icon: Newspaper },
+    { path: '/dashboard/orders', label: 'Orders', icon: ClipboardList },
+    { path: '/dashboard/watchlist', label: 'Watchlist', icon: Star },
+    { path: '/dashboard/notifications', label: 'Notifications', icon: Bell },
+    { path: '/dashboard/profile', label: 'Profile', icon: UserCircle },
+    { path: '/dashboard/settings', label: 'Settings', icon: Settings },
   ];
+  
 
   useEffect(() => {
     setIsSidebarOpen(isOpen);
@@ -95,29 +94,41 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
         } lg:translate-x-0 lg:static`}
       >
         <div className="flex flex-col h-full pt-6">
-          {/* Navigation Menu with Skeleton Loader */}
-          <nav className="flex-1 px-2 py-4 space-y-1">
-            {isLoading
-              ? [...Array(10)].map((_, i) => (
-                  <div key={i} className="h-10 w-full bg-gray-700 animate-pulse rounded-md"></div>
-                ))
-              : menuItems.map(({ path, label, icon: Icon }) => (
-                  <NavLink
-                    key={path}
-                    to={path}
-                    className={({ isActive }) =>
-                      `w-full flex items-center space-x-2 px-4 py-3 rounded-md transition-colors ${
-                        isActive ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-800'
-                      }`
-                    }
-                    onClick={() => handleMenuItemClick(path)}
-                  >
-                    <Icon className="h-5 w-5" />
-                    <span>{label}</span>
-                  </NavLink>
-                ))}
-          </nav>
-        </div>
+  {/* Navigation Menu with Skeleton Loader */}
+  <nav className="flex-1 px-2 py-4 space-y-1">
+    {isLoading
+      ? [...Array(10)].map((_, i) => (
+          <div
+            key={i}
+            className="h-10 w-full bg-gray-700 animate-pulse rounded-md"
+          ></div>
+        ))
+      : menuItems.map(({ path, label, icon: Icon }) => {
+          // Add 'end' prop only for the Dashboard item
+          const isDashboard = path === '/dashboard';
+
+          return (
+            <NavLink
+              key={path}
+              to={path}
+              end={isDashboard} // 👈 Only Dashboard uses `end` prop
+              className={({ isActive }) =>
+                `w-full flex items-center space-x-2 px-4 py-3 rounded-md transition-colors ${
+                  isActive
+                    ? 'bg-indigo-600 text-white'
+                    : 'text-gray-300 hover:bg-gray-800'
+                }`
+              }
+              onClick={() => handleMenuItemClick(path)}
+            >
+              <Icon className="h-5 w-5" />
+              <span>{label}</span>
+            </NavLink>
+          );
+        })}
+  </nav>
+</div>
+
       </div>
     </>
   );

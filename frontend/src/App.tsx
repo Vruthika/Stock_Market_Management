@@ -1,5 +1,6 @@
-import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import DashboardLayout from './components/DashboardLayout';
 import { Sidebar } from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import { TradingPage } from './pages/TradingPage';
@@ -13,47 +14,27 @@ import NewsResearchPage from './components/News';
 import { OrdersPage } from './components/Orders';
 import { NotificationsPage } from './pages/Notifications';
 import { SettingsPage } from './components/Settings';
-import Header from './components/Header';
-import { Course } from './components/Course.tsx';
-import { CourseDetails } from './components/CourseDetails.tsx';
+import { Course } from './components/Course';
+import { CourseDetails } from './components/CourseDetails';
 import Sign from './pages/Sign';
 import SignUp from './pages/SignUp';
 import Landing from './pages/Landing';
-import { Outlet } from 'react-router-dom';
 import ChatBot from './pages/ChatBot';
-import { ToastContainer } from 'react-toastify';
 import Footer from './components/Footer';
 import { LearningPage } from './pages/Learning';
-
-function DashboardLayout() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prevState) => !prevState);
-  };
-
-  return (
-    <div className="bg-gray-900 flex py-20">
-      <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-      <div className="flex-1 h-screen overflow-y-auto p-3 lg:p-4 scrollbar-hide">
-        <Outlet />
-      </div>
-      <ToastContainer />
-    </div>
-  );
-}
 
 function App() {
   return (
     <Router>
       <Header />
+
       <Routes>
-        {/* Landing + Auth Pages */}
+        {/* Public Pages */}
         <Route path="/" element={<Landing />} />
         <Route path="/sign-in" element={<Sign />} />
         <Route path="/sign-up" element={<SignUp />} />
 
-        {/* Authenticated Dashboard Layout */}
+        {/* Authenticated Layout with Sidebar and Nested Routes */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="trading" element={<TradingPage />} />
@@ -72,6 +53,7 @@ function App() {
           <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Routes>
+
       <ChatBot />
       <Footer />
     </Router>

@@ -32,9 +32,9 @@ export const PortfolioPage: React.FC = () => {
               <p className="text-gray-400">Your investment summary</p>
             </div>
           </div>
-          <button className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+          {/* <button className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
             Add Funds
-          </button>
+          </button> */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

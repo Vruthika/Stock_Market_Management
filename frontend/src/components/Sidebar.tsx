@@ -36,7 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
     { path: '/dashboard/trading', label: 'Trading', icon: LineChart },
     { path: '/dashboard/portfolio', label: 'Portfolio', icon: Wallet },
     { path: '/dashboard/social', label: 'Social Trading', icon: Users },
-    { path: '/dashboard/chat', label: 'Live Chat', icon: MessageSquare },
+    // { path: '/dashboard/chat', label: 'Live Chat', icon: MessageSquare },
     { path: '/dashboard/market-analysis', label: 'Market Analysis', icon: BarChart },
     { path: '/dashboard/news', label: 'News & Research', icon: Newspaper },
     { path: '/dashboard/orders', label: 'Orders', icon: ClipboardList },

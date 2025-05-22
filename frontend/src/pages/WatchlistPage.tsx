@@ -20,10 +20,10 @@ export const WatchlistPage: React.FC = () => {
             <Star className="w-6 h-6 text-yellow-500" />
             <h2 className="text-xl font-semibold text-white">Watchlists</h2>
           </div>
-          <button className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+          {/* <button className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
             <Plus className="w-4 h-4" />
             <span>New Watchlist</span>
-          </button>
+          </button> */}
         </div>
 
         {/* Watchlist Tabs */}

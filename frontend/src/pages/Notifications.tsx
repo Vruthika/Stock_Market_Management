@@ -74,7 +74,7 @@ export const NotificationsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Notification Filters */}
+        {/* Notification Filters
         <div className="flex space-x-2">
           <button className="px-4 py-2 bg-indigo-600 text-white rounded-md">
             All
@@ -88,7 +88,7 @@ export const NotificationsPage: React.FC = () => {
           <button className="px-4 py-2 bg-gray-800 text-gray-400 hover:bg-gray-700 rounded-md">
             Orders
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Notifications List */}

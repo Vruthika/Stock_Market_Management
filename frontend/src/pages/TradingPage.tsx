@@ -49,7 +49,7 @@ export const TradingPage: React.FC = () => {
           <StockChart data={mockChartData} symbol={selectedStock.symbol} />
           
           <div className="mt-4 flex space-x-2">
-  {['1m', '5m', '15m', '1h', '1D', '1W', '1M'].map((timeframe) => (
+  {/* {['1m', '5m', '15m', '1h', '1D', '1W', '1M'].map((timeframe) => (
     <button
       key={timeframe}
       className={`px-3 py-1 text-sm rounded-md transition-all ${
@@ -61,7 +61,7 @@ export const TradingPage: React.FC = () => {
     >
       {timeframe}
     </button>
-  ))}
+  ))} */}
 </div>
 
         </div>
